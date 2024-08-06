@@ -15,23 +15,20 @@ public class Config
 {
     public record ConfigEntry(
             String mob,
-            double chance
+            double chance,
+            boolean adjustTerrain,
+            boolean targetPlayer
     ) {}
 
-    public record ServerConfig(
-        boolean adjustTerrain,
-        HashMap<String, ConfigEntry[]> entries
-    ) {}
+    public static class ServerConfig extends HashMap<String, ConfigEntry[]> {}
 
 
-    public static ServerConfig CONFIG = new ServerConfig(
-            true,
-            new HashMap<>()
-    );
+    public static ServerConfig CONFIG = new ServerConfig();
     static
     {
-        CONFIG.entries.put("minecraft:cobweb", new ConfigEntry[] { new ConfigEntry("minecraft:cave_spider", 0.5)});
-        CONFIG.entries.put("minecraft:stone_bricks", new ConfigEntry[] { new ConfigEntry("minecraft:silverfish", 0.2), new ConfigEntry("minecraft:endermite", 0.1) });
+        CONFIG.put("minecraft:cobweb", new ConfigEntry[] { new ConfigEntry("minecraft:cave_spider", 0.05, false, true)});
+        CONFIG.put("minecraft:grass", new ConfigEntry[] { new ConfigEntry("minecraft:creeper", 0.005, true, true)});
+        CONFIG.put("minecraft:stone_bricks", new ConfigEntry[] { new ConfigEntry("minecraft:silverfish", 0.05, false, false), new ConfigEntry("minecraft:endermite", 0.01, false, false) });
     }
 
     public static final Gson GSON = new GsonBuilder().setPrettyPrinting().setLenient().create();
@@ -39,7 +36,7 @@ public class Config
 
     public static void create() throws IOException
     {
-        Path p = Path.of("config");
+        final Path p = Path.of("config");
         if (Files.exists(p))
         {
             if (Files.isDirectory(p))
